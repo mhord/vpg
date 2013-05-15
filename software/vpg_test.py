@@ -15,9 +15,10 @@ while TRUE:
     i = cam.getImage().grayscale()
     i.show()
 
+  i = cam.getImage()
+  i = cam.getImage()
   i = cam.getImage().grayscale()
-  i = cam.getImage()
-  i = cam.getImage()
+  
   startToOpDist = 38.5
   opToOpDist = 37
 
@@ -26,7 +27,7 @@ while TRUE:
 
   if blobList is None:
     print "No start tile found!"
-    sys.exit()
+    continue
     
   elif blobList is not None:
     print len(blobList)
@@ -52,7 +53,7 @@ while TRUE:
 
   if commandTileBlobs is None:
     print "No command blobs found!"
-    sys.exit()
+    continue
 
   ## We've found blobs that are the right size for command tiles. Now we need
   ##  to create a list of those blobs. Right now, we're going to leave them
@@ -102,6 +103,10 @@ while TRUE:
 
   for blob in commandBlobs:
     blob[0].draw(width = -1, color = red)
+    
+  if len(commandBlobs) != len(circleBlobs):
+    print "Did not find same number of fids and commands!"
+    continue
 
   ## Create a list of commands. Each command will be based on the angle from
   ##  the center of a circle to the center of its corresponding command blob,
@@ -113,6 +118,7 @@ while TRUE:
     y1 = circleBlobs[j][2][1]
     x2 = commandBlobs[j][2][0]
     y2 = commandBlobs[j][2][1]
+    cmdDist = hypot(x2-x1, y2-y1)
     commandAngleLines.line(circleBlobs[j][2],commandBlobs[j][2], color = white, width = 1)
     localAngle = degrees(atan2(y2-y1,x2-x1))
     commandList.append(localAngle-trainAngle)
