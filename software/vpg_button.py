@@ -15,7 +15,7 @@
 
 import time, os
 
-def buttonCheck():
+def buttonCheck(buttonID):
   ## For simplicity's sake, we'll create a string for our paths.
   GPIO_MODE_PATH= os.path.normpath('/sys/devices/virtual/misc/gpio/mode/')
   GPIO_PIN_PATH=os.path.normpath('/sys/devices/virtual/misc/gpio/pin/')
@@ -38,13 +38,6 @@ def buttonCheck():
   temp = ['']             ## a string to store the value 
   file = open(pin, 'r')   ## open the file
   temp[0] = file.read()   ## fetch the pin state
-
-  ## Now, wait until the button gets pressed.
-  # while '0' not in temp[0]:
-    # file.seek(0)      ## *MUST* be sure that we're at the start of the file!
-    # temp[0] = file.read()   ## fetch the pin state
-    # print "Waiting for button press..."
-    # time.sleep(.1)  ## sleep for 1/10 of a second.
 
   file.close()  ## Make sure to close the file when you're done!
   

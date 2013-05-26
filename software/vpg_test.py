@@ -1,9 +1,12 @@
 from SimpleCV import *
+import serial
 from vpg_constants import *
 from vpg_funcs import *
 from vpg_button import *
 import time, sys
 from math import hypot
+
+myPort = serial.Serial('/dev/ttyUSB0', 38400, timeout = 10)
 
 cam = Camera()
 
@@ -30,7 +33,6 @@ while TRUE:
     continue
     
   elif blobList is not None:
-    print len(blobList)
     blobList.draw(width = -1, color = blue)
     startTileCenter = blobList[0].centroid()
     startTileYSize = blobList[0].minRectHeight()
@@ -47,7 +49,7 @@ while TRUE:
   y0 = startTileCenter[1]
 
   ## Identify command tiles.
-  commandTileBlobs = i.findBlobs(threshval = -1, minsize = 100, maxsize = 200)
+  commandTileBlobs = i.findBlobs(threshval = -1, minsize = 100, maxsize = 200, threshconstant = 25)
   circleBlobs = []
   commandBlobs = []
 
@@ -72,6 +74,14 @@ while TRUE:
         distToStartTile = hypot(x1-x0,y1-y0)
         commandBlobs.append([blob,distToStartTile, blob.centroid()])
 
+  ## Catch any failures to find fids and commands here.
+  if len(circleBlobs) == 0:
+    print "No fids found!"
+    continue
+  if len(commandBlobs) == 0:
+    print "No commands found!"
+    continue
+  
   ## Time to sort blobs! We want to start at the centroid of the start block,
   ##  then order our blobs from closest to farthest away from that block. This
   ##  gives us two things: an order of execution, and a way to determine which
@@ -106,6 +116,9 @@ while TRUE:
     
   if len(commandBlobs) != len(circleBlobs):
     print "Did not find same number of fids and commands!"
+    print "Found " + str(len(circleBlobs)) + " fids for " + str(len(commandBlobs)) + " commands"
+    i.show()
+    time.sleep(2)
     continue
 
   ## Create a list of commands. Each command will be based on the angle from
@@ -127,8 +140,12 @@ while TRUE:
   i.applyLayers()
 
   print "Command angles:"
+  commandText = []
   for item in commandList:
-    extractCommand(item)
+    commandText.append(str(extractCommand(item))[0])
     
   i.show() 
+  for command in commandText:
+    myPort.write(command)
+    
   print "All done!"

@@ -14,4 +14,5 @@ def extractCommand(angle):
   if angle > 7.0:
     angle = 0.0
   print angle
+  return angle
   
