@@ -27,9 +27,8 @@ def buttonCheck(buttonID):
   OUTPUT = "1"
   INPUT_PU = "8"
 
-  ## First, populate the arrays with file objects that we can use later.
-  pin = os.path.join(GPIO_PIN_PATH, 'gpio2')
-  mode = os.path.join(GPIO_MODE_PATH, 'gpio2')
+  pin = os.path.join(GPIO_PIN_PATH, 'gpio'+str(buttonID))
+  mode = os.path.join(GPIO_MODE_PATH, 'gpio'+str(buttonID))
 
   file = open(mode, 'r+') ## open the file in r/w mode
   file.write(INPUT_PU)    ## set the mode of the pin
